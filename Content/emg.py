@@ -1,12 +1,10 @@
 import asyncio
 import qtm_rt
-import time
 import socket
 
 
 def on_packet(packet):
     global conn
-    # global arr
     header, signal = packet.get_analog_single()
     try:
         # print("Sending: " + str(int(signal[0][1][0][0])) + ',' + str(int(signal[0][1][0][4])) + ','
@@ -14,16 +12,12 @@ def on_packet(packet):
         conn.sendall(bytes(
             str(int(signal[0][1][0][0])) + ',' + str(int(signal[0][1][0][4])) + ','
             + str(int(signal[0][1][0][8])) + ',' + str(int(signal[0][1][0][12])), "utf-8"))
-        # arr.append(abs(int(signal[0][1][0][12])))
     except:
-        # print(max(arr))
         exit()
 
 
 async def setup():
     global conn
-    # global arr
-    # arr = []
     connection = await qtm_rt.connect("127.0.0.1")
     if connection is None:
         return

@@ -13,9 +13,11 @@ def on_packet(packet):
     global emg4
     header, signal = packet.get_analog_single()
     try:
+        # conn.sendall(bytes(str(int(signal[0][1][0][0])) + ',' + str(int(signal[0][1][0][4])) + ','
+        #                    + str(int(signal[0][1][0][8])) + ',' + str(int(signal[0][1][0][12])), "utf-8"))
         # print("Sending: " + str(int(signal[0][1][0][0])) + ',' + str(int(signal[0][1][0][4])) + ','
         #   + str(int(signal[0][1][0][8])) + ',' + str(int(signal[0][1][0][12])))
-        if counter == 5:
+        if counter == 20:
             conn.sendall(bytes(
                  str(int(math.sqrt(emg1 / counter))) + ',' + str(int(math.sqrt(emg2 / counter))) + ','
                  + str(int(math.sqrt(emg3 / counter))) + ',' + str(int(math.sqrt(emg4 / counter))), "utf-8"))

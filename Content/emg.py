@@ -32,7 +32,11 @@ def on_packet(packet):
             emg3 += int(signal[0][1][0][8]) ** 2
             emg4 += int(signal[0][1][0][12]) ** 2
     except:
-        exit()
+        while True:
+            conn, addr = s.accept()
+            print('Connected by', addr)
+            if conn is not None:
+                break
 
 
 async def setup():
@@ -63,7 +67,7 @@ if __name__ == "__main__":
         # Create socket
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.bind((HOST, PORT))
-        s.listen(0)
+        s.listen()
 
         asyncio.ensure_future(setup())
         asyncio.get_event_loop().run_forever()

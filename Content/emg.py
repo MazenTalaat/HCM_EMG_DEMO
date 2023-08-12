@@ -2,7 +2,7 @@ import asyncio
 import qtm_rt
 import socket
 import math
-
+import numpy as np
 
 def on_packet(packet):
     global conn
@@ -19,19 +19,28 @@ def on_packet(packet):
         #   + str(int(signal[0][1][0][8])) + ',' + str(int(signal[0][1][0][12])))
         if counter == 20:
             conn.sendall(bytes(
-                 str(int(math.sqrt(emg1 / counter))) + ',' + str(int(math.sqrt(emg2 / counter))) + ','
-                 + str(int(math.sqrt(emg3 / counter))) + ',' + str(int(math.sqrt(emg4 / counter))), "utf-8"))
-            print("Sending: " + str(int(math.sqrt(emg1 / counter))) + ',' + str(int(math.sqrt(emg2 / counter))) + ','
-                   + str(int(math.sqrt(emg3 / counter))) + ',' + str(int(math.sqrt(emg4 / counter))))
-            counter = 0
-            emg1, emg2, emg3, emg4 = 0, 0, 0, 0
+                 str(int(np.sqrt(np.mean(np.array(emg1)**2)))) + ',' + str(int(np.sqrt(np.mean(np.array(emg2)**2)))) + ','
+                 + str(int(np.sqrt(np.mean(np.array(emg3)**2)))) + ',' + str(int(np.sqrt(np.mean(np.array(emg4)**2)))), "utf-8"))
+            print("Sending: " + str(int(np.sqrt(np.mean(np.array(emg1)**2)))) + ',' + str(int(np.sqrt(np.mean(np.array(emg2)**2)))) + ','
+                 + str(int(np.sqrt(np.mean(np.array(emg3)**2)))) + ',' + str(int(np.sqrt(np.mean(np.array(emg4)**2)))))
+            emg1.append(int(signal[0][1][0][0]))
+            emg2.append(int(signal[0][1][0][4]))
+            emg3.append(int(signal[0][1][0][8]))
+            emg4.append(int(signal[0][1][0][12]))
+            emg1.pop(0)
+            emg2.pop(0)
+            emg3.pop(0)
+            emg4.pop(0)
         else:
             counter += 1
-            emg1 += int(signal[0][1][0][0]) ** 2
-            emg2 += int(signal[0][1][0][4]) ** 2
-            emg3 += int(signal[0][1][0][8]) ** 2
-            emg4 += int(signal[0][1][0][12]) ** 2
+            emg1.append(int(signal[0][1][0][0]))
+            emg2.append(int(signal[0][1][0][4]))
+            emg3.append(int(signal[0][1][0][8]))
+            emg4.append(int(signal[0][1][0][12]))
+
     except:
+        counter = 0
+        emg1, emg2, emg3, emg4 = [], [], [], []
         while True:
             conn, addr = s.accept()
             print('Connected by', addr)
@@ -47,7 +56,7 @@ async def setup():
     global emg3
     global emg4
     counter = 0
-    emg1, emg2, emg3, emg4 = 0, 0, 0, 0
+    emg1, emg2, emg3, emg4 = [], [], [], []
     connection = await qtm_rt.connect("127.0.0.1")
     if connection is None:
         return

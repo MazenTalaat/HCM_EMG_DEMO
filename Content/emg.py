@@ -12,40 +12,41 @@ def on_packet(packet):
     global emg3
     global emg4
     header, signal = packet.get_analog_single()
-    try:
-        # conn.sendall(bytes(str(int(signal[0][1][0][0])) + ',' + str(int(signal[0][1][0][4])) + ','
-        #                    + str(int(signal[0][1][0][8])) + ',' + str(int(signal[0][1][0][12])), "utf-8"))
-        # print("Sending: " + str(int(signal[0][1][0][0])) + ',' + str(int(signal[0][1][0][4])) + ','
-        #   + str(int(signal[0][1][0][8])) + ',' + str(int(signal[0][1][0][12])))
-        if counter == 20:
-            conn.sendall(bytes(
-                 str(int(np.sqrt(np.mean(np.array(emg1)**2)))) + ',' + str(int(np.sqrt(np.mean(np.array(emg2)**2)))) + ','
-                 + str(int(np.sqrt(np.mean(np.array(emg3)**2)))) + ',' + str(int(np.sqrt(np.mean(np.array(emg4)**2)))), "utf-8"))
-            print("Sending: " + str(int(np.sqrt(np.mean(np.array(emg1)**2)))) + ',' + str(int(np.sqrt(np.mean(np.array(emg2)**2)))) + ','
-                 + str(int(np.sqrt(np.mean(np.array(emg3)**2)))) + ',' + str(int(np.sqrt(np.mean(np.array(emg4)**2)))))
-            emg1.append(int(signal[0][1][0][0]))
-            emg2.append(int(signal[0][1][0][4]))
-            emg3.append(int(signal[0][1][0][8]))
-            emg4.append(int(signal[0][1][0][12]))
-            emg1.pop(0)
-            emg2.pop(0)
-            emg3.pop(0)
-            emg4.pop(0)
-        else:
-            counter += 1
-            emg1.append(int(signal[0][1][0][0]))
-            emg2.append(int(signal[0][1][0][4]))
-            emg3.append(int(signal[0][1][0][8]))
-            emg4.append(int(signal[0][1][0][12]))
+    if not math.isnan(signal[0][1][0][0]) and not math.isnan(signal[0][1][0][4]) and not math.isnan(signal[0][1][0][8]) and not math.isnan(signal[0][1][0][12]):
+        try:
+            # conn.sendall(bytes(str(int(signal[0][1][0][0])) + ',' + str(int(signal[0][1][0][4])) + ','
+            #                    + str(int(signal[0][1][0][8])) + ',' + str(int(signal[0][1][0][12])), "utf-8"))
+            # print("Sending: " + str(int(signal[0][1][0][0])) + ',' + str(int(signal[0][1][0][4])) + ','
+            #   + str(int(signal[0][1][0][8])) + ',' + str(int(signal[0][1][0][12])))
+            if counter == 20:
+                conn.sendall(bytes(
+                     str(int(np.sqrt(np.mean(np.array(emg1)**2)))) + ',' + str(int(np.sqrt(np.mean(np.array(emg2)**2)))) + ','
+                     + str(int(np.sqrt(np.mean(np.array(emg3)**2)))) + ',' + str(int(np.sqrt(np.mean(np.array(emg4)**2)))), "utf-8"))
+                print("Sending: " + str(int(np.sqrt(np.mean(np.array(emg1)**2)))) + ',' + str(int(np.sqrt(np.mean(np.array(emg2)**2)))) + ','
+                     + str(int(np.sqrt(np.mean(np.array(emg3)**2)))) + ',' + str(int(np.sqrt(np.mean(np.array(emg4)**2)))))
+                emg1.append(int(signal[0][1][0][0]))
+                emg2.append(int(signal[0][1][0][4]))
+                emg3.append(int(signal[0][1][0][8]))
+                emg4.append(int(signal[0][1][0][12]))
+                emg1.pop(0)
+                emg2.pop(0)
+                emg3.pop(0)
+                emg4.pop(0)
+            else:
+                counter += 1
+                emg1.append(int(signal[0][1][0][0]))
+                emg2.append(int(signal[0][1][0][4]))
+                emg3.append(int(signal[0][1][0][8]))
+                emg4.append(int(signal[0][1][0][12]))
 
-    except:
-        counter = 0
-        emg1, emg2, emg3, emg4 = [], [], [], []
-        while True:
-            conn, addr = s.accept()
-            print('Connected by', addr)
-            if conn is not None:
-                break
+        except:
+            counter = 0
+            emg1, emg2, emg3, emg4 = [], [], [], []
+            while True:
+                conn, addr = s.accept()
+                print('Connected by', addr)
+                if conn is not None:
+                    break
 
 
 async def setup():
